@@ -28,7 +28,7 @@ class Error:
         col = self.pos_start.col
         return (
             f"Line {line}, col {col}\n"
-            f"{self.name!r}: {self.msg!r}"
+            f"{self.name}: {self.msg}"
         )
 
 class SyntaxError(Error):

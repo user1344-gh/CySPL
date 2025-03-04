@@ -1,11 +1,7 @@
 import info
-import lexer
+import repl
 
 print("CySPL (Cy's simplified programming language)")
 print(f"Version {info.VER_STRING}")
 
-x = lexer.Lexer("345-3.4")
-
-print(
-    x.generate_tokens()
-)
+repl.run_repl()

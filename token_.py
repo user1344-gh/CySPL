@@ -2,12 +2,13 @@ import pos
 from enum import Enum
 
 class TokenType(Enum):
-    INT      = 1
-    FLOAT    = 2
-    PLUS     = 3
-    MINUS    = 4
-    ASTERISK = 5
-    SLASH    = 6
+    EOF        = 0
+    INT        = 1
+    FLOAT      = 2
+    PLUS       = 3
+    MINUS      = 4
+    ASTERISK   = 5
+    SLASH      = 6
 
 class Token:
     def __init__(self, ttype, value, pos_start, pos_end):

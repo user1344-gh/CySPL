@@ -37,7 +37,7 @@ class Lexer:
     def generate_tokens(self) -> tuple[str, str]:
         tokens = []
         while self.current_char and self.current_char != "\x1a":
-            if self.current_char in " \t":
+            if self.current_char in " \t\n":
                 self.advance()
             elif self.current_char == "+":
                 tokens.append(Token(
@@ -69,6 +69,7 @@ class Lexer:
                     pos_start=self.pos,
                     pos_end=self.next_pos()
                 ))
+        tokens.append(Token(TokenType.EOF, None, self.pos, self.pos))
         return (tokens, None)
     
     def gen_number(self) -> tuple[str, str]:
