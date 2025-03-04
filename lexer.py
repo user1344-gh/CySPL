@@ -23,8 +23,7 @@ class Lexer:
         return self.current_char
     
     def next_pos(self):
-        from copy import copy
-        pos = copy(self.pos)
+        pos = self.pos.copy()
         pos.index+=1
         if self.chars[pos.index] == '\n':
             pos.line += 1
@@ -63,6 +62,10 @@ class Lexer:
                 res = self.gen_number()
                 if res[1]: return res
                 tokens.append(res[0])
+            elif self.current_char == '"':
+                res = self.gen_string()
+                if res[1]: return res
+                tokens.append(res[0])
             else:
                 return (None, err.SyntaxError(
                     msg=f"Invalid character: '{self.current_char}'",
@@ -75,7 +78,8 @@ class Lexer:
     def gen_number(self) -> tuple[str, str]:
         number_str = ""
         decimal_point = False
-        pos_start = self.pos
+        token_type = TokenType.INT
+        pos_start = self.pos.copy()
 
         while 1:
             if not self.current_char in "1234567890.": break
@@ -87,8 +91,62 @@ class Lexer:
                         pos_end=self.next_pos()
                     ))
                 decimal_point = True
+                token_type = TokenType.FLOAT
             number_str += self.current_char
             self.advance()
-        token_type = TokenType.FLOAT if decimal_point else TokenType.INT
-        val_type = float if decimal_point else int
-        return (Token(token_type, val_type(number_str), pos_start, self.pos),None)
+        if self.current_char == "u":
+            if decimal_point:
+                return (None, err.TypeError(
+                    msg="Unsigned mofidifier added to float value.",
+                    pos_start=self.pos,
+                    pos_end=self.next_pos()
+                ))
+            token_type = TokenType.U_INT
+            self.advance()
+        elif self.current_char == "f":
+            token_type = TokenType.FLOAT
+            self.advance()
+        elif self.current_char == "l":
+            if decimal_point:
+                return (None, err.TypeError(
+                    msg="Long mofidifier added to float value.",
+                    pos_start=self.pos,
+                    pos_end=self.next_pos()
+                ))
+            self.advance()
+            if self.current_char == "u":
+                token_type = TokenType.LU_INT
+            else:
+                token_type = TokenType.L_INT
+            self.advance()
+        elif self.current_char == "d":
+            token_type = TokenType.DOUBLE
+            self.advance()
+        
+        return (Token(token_type, number_str, pos_start, self.pos),None)
+
+    def gen_string(self):
+        import codecs
+        pos_start = self.pos.copy()
+        escape_chars = {
+            "n": "\\n",
+            "t": "\\t",
+        }
+        self.advance()
+        string = ""
+        while self.current_char != "\"":
+            if self.current_char == "\x1a":
+                return None, err.SyntaxError(
+                    None, "Expected '\"'", pos_start, self.pos
+                )
+            elif self.current_char == "\\":
+                self.advance()
+                if self.current_char == "\"":
+                    string += '\\"'
+                else:
+                    string += "\\" + self.current_char
+            else:
+                string += self.current_char
+            self.advance()
+        self.advance()
+        return (Token(TokenType.STRING, string, pos_start, self.pos), None)

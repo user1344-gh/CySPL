@@ -46,6 +46,21 @@ class Parser:
         elif ttype == TT.FLOAT:
             self.advance()
             return res.success(n.FloatNode(token))
+        elif ttype == TT.U_INT:
+            self.advance()
+            return res.success(n.UnsignedIntNode(token))
+        elif ttype == TT.L_INT:
+            self.advance()
+            return res.success(n.LongIntNode(token))
+        elif ttype == TT.LU_INT:
+            self.advance()
+            return res.success(n.UnsignedLongIntNode(token))
+        elif ttype == TT.DOUBLE:
+            self.advance()
+            return res.success(n.DoubleNode(token))
+        elif ttype == TT.STRING:
+            self.advance()
+            return res.success(n.StringNode(token))
         elif ttype == TT.EOF:
             return res
         

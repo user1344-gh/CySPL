@@ -22,6 +22,50 @@ class FloatNode:
             f"[FLOAT {self.token.value}]"
         )
 
+class UnsignedIntNode:
+    def __init__(self, token: Token):
+        self.token = token
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+    
+    def __repr__(self):
+        return (
+            f"[U_INT {self.token.value}]"
+        )
+class LongIntNode:
+    def __init__(self, token: Token):
+        self.token = token
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+    
+    def __repr__(self):
+        return (
+            f"[L_INT {self.token.value}]"
+        )
+
+class UnsignedLongIntNode:
+    def __init__(self, token: Token):
+        self.token = token
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+    
+    def __repr__(self):
+        return (
+            f"[LU_INT {self.token.value}]"
+        )
+
+class DoubleNode:
+    def __init__(self, token: Token):
+        self.token = token
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+    
+    def __repr__(self):
+        return (
+            f"[DOUBLE {self.token.value}]"
+        )
+
+
 class BinOpNode:
     "Binary infix operations"
     def __init__(self, node_l, node_r, op_tok: Token):
@@ -44,3 +88,14 @@ class UnaryOpNode:
 
     def __repr__(self):
         return f"[{self.op_tok.ttype.name} {self.node}]"
+
+class StringNode:
+    def __init__(self, token: Token):
+        self.token = token
+        self.pos_start = token.pos_start
+        self.pos_end = token.pos_end
+    
+    def __repr__(self):
+        return (
+            f"[STRING {self.token.value}]"
+        )

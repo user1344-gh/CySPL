@@ -8,8 +8,10 @@ class Position:
     def __str__(self):
         return f"({self.index}: {self.line}, {self.col})"
     def __add__(self, other: int):
-        from copy import copy
-        clone = copy(self)
+        clone = self.copy()
         clone.index += other
         clone.line += other
         return clone
+    def copy(self):
+        from copy import copy
+        return copy(self)
