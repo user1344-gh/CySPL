@@ -1,19 +1,22 @@
 import run
 import sys
 import json
+from namespace import Namespace
 
 with open("./repl_settings.json") as repl_settings:
     settings = json.loads(repl_settings.read())
 
 def run_repl():
     print("CySPL REPL, write $!help for commands")
+    ns = Namespace()
+
     while 1:
         inp = input("> ")
         if inp.startswith("$!"):
             cmd_res = run_command(inp)
             if cmd_res == ("EXIT"): return
             continue
-        res = run.run(inp, settings["max_comp_stage"])
+        res = run.compile(inp, settings["max_comp_stage"], ns)
         if res[1]:
             print(res[1].display_err(inp), file=sys.stderr)
         elif res[0]:

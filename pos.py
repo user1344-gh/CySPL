@@ -10,8 +10,10 @@ class Position:
     def __add__(self, other: int):
         clone = self.copy()
         clone.index += other
-        clone.line += other
+        clone.col += other
         return clone
+    def __sub__(self, other: int):
+        return (self + -other)
     def copy(self):
         from copy import copy
         return copy(self)

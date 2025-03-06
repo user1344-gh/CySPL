@@ -1,6 +1,9 @@
 from pos import Position
-import errors as err
-from token_ import Token, TokenType
+from errors import Error
+from token_ import Token, TokenType, KEYWORDS
+from string import ascii_letters as letters
+digits = "1234567890"
+alphanumerics = letters + digits
 
 class Lexer:
     def __init__(self, code):
@@ -58,7 +61,7 @@ class Lexer:
                     TokenType.SLASH, None, self.pos, self.next_pos()
                 ))
                 self.advance()
-            elif self.current_char in "1234567890.":
+            elif self.current_char in (digits + "."):
                 res = self.gen_number()
                 if res[1]: return res
                 tokens.append(res[0])
@@ -66,8 +69,25 @@ class Lexer:
                 res = self.gen_string()
                 if res[1]: return res
                 tokens.append(res[0])
+            elif self.current_char == ";":
+                tokens.append(Token(
+                    TokenType.SEMICOLON, None, self.pos, self.next_pos()
+                ))
+                self.advance()
+            elif self.current_char == "=":
+                tokens.append(Token(
+                    TokenType.EQUALS, None, self.pos, self.next_pos()
+                ))
+                self.advance()
+            elif self.current_char == ":":
+                tokens.append(Token(
+                    TokenType.COLON, None, self.pos, self.next_pos()
+                ))
+                self.advance()
+            elif self.current_char in letters + "_":
+                tokens.append(self.gen_ident())
             else:
-                return (None, err.SyntaxError(
+                return (None, Error(
                     msg=f"Invalid character: '{self.current_char}'",
                     pos_start=self.pos,
                     pos_end=self.next_pos()
@@ -82,10 +102,10 @@ class Lexer:
         pos_start = self.pos.copy()
 
         while 1:
-            if not self.current_char in "1234567890.": break
+            if not self.current_char in (digits + "."): break
             if self.current_char == ".":
                 if decimal_point:
-                    return (None, err.SyntaxError(
+                    return (None, Error(
                         msg="Unexpected decimal point",
                         pos_start=self.pos,
                         pos_end=self.next_pos()
@@ -96,7 +116,7 @@ class Lexer:
             self.advance()
         if self.current_char == "u":
             if decimal_point:
-                return (None, err.TypeError(
+                return (None, Error(
                     msg="Unsigned mofidifier added to float value.",
                     pos_start=self.pos,
                     pos_end=self.next_pos()
@@ -108,7 +128,7 @@ class Lexer:
             self.advance()
         elif self.current_char == "l":
             if decimal_point:
-                return (None, err.TypeError(
+                return (None, Error(
                     msg="Long mofidifier added to float value.",
                     pos_start=self.pos,
                     pos_end=self.next_pos()
@@ -136,8 +156,8 @@ class Lexer:
         string = ""
         while self.current_char != "\"":
             if self.current_char == "\x1a":
-                return None, err.SyntaxError(
-                    None, "Expected '\"'", pos_start, self.pos
+                return None, Error(
+                    "Expected '\"'", pos_start, self.pos
                 )
             elif self.current_char == "\\":
                 self.advance()
@@ -149,4 +169,17 @@ class Lexer:
                 string += self.current_char
             self.advance()
         self.advance()
-        return (Token(TokenType.STRING, string, pos_start, self.pos), None)
+        return (Token(TokenType.STR, string, pos_start, self.pos), None)
+
+    def gen_ident(self):
+        ident_str = ""
+        token_type = TokenType.IDENTIFIER
+        pos_start = self.pos.copy()
+
+        while self.current_char in alphanumerics + "_":
+            ident_str += self.current_char
+            self.advance()
+        if ident_str in KEYWORDS:
+            token_type = TokenType.KEYWORD
+        
+        return Token(token_type, ident_str, pos_start, self.pos)

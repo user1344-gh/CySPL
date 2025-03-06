@@ -1,4 +1,4 @@
-class ParseResult:
+class Result:
     def __init__(self):
         self.error = None
         self.node = None
