@@ -21,7 +21,7 @@ A 64 bit signed integer\
 Syntax: `NUMBERl`
 ### lu_int
 A 64 bit unsigned integer\
-Syntax: `NUMBERul`
+Syntax: `NUMBERlu`
 ### float
 A single-precision (32bit) floating point value\
 Syntax: `NUMBERf` / any number with a decimal point
